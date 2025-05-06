@@ -18,8 +18,8 @@ jobs:
       - name: Set up GCP credentials
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ secrets.GOOGLE_PROJECT }}  # Project ID from secret
-          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}  # Service account key JSON from secret
+          project_id: ${{ secrets.GOOGLE_PROJECT }}  # Your project ID stored in GitHub Secrets
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}  # Service account key stored in GitHub Secrets
 
       # Step 3: Authenticate Docker to Google Cloud Artifact Registry
       - name: Authenticate Docker to Artifact Registry
