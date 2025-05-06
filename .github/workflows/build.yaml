@@ -22,7 +22,6 @@ jobs:
         env:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         run: |
-          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
           gcloud auth configure-docker europe-west3-docker.pkg.dev
           docker build -t europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/first-application/nginx:latest .
           docker push europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/first-application/nginx:latest
