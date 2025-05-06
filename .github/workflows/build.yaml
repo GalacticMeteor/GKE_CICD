@@ -1,27 +1,37 @@
-name: Deploy Nginx
+name: Build and Push Docker Image to Google Artifact Registry
+
 on:
   push:
     branches:
-      - main
+      - main  # Trigger the workflow when pushing to the main branch
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  build_and_push:
+    runs-on: ubuntu-latest  # Use an Ubuntu runner for this job
 
     steps:
+      # Step 1: Checkout the code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: install gcloud cli
+      # Step 2: Set up Google Cloud credentials using a service account key stored in GitHub Secrets
+      - name: Set up GCP credentials
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ secrets.GOOGLE_PROJECT }}
-          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          export_default_credentials: true
-      - name: Build and push Docker image
-        env:
-          GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+          project_id: ${{ secrets.GOOGLE_PROJECT }}  # Project ID from secret
+          credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}  # Service account key JSON from secret
+
+      # Step 3: Authenticate Docker to Google Cloud Artifact Registry
+      - name: Authenticate Docker to Artifact Registry
         run: |
-          # gcloud auth configure-docker europe-west3-docker.pkg.dev
-          # docker build -t europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/first-application/nginx:latest .
-          # docker push europe-west3-docker.pkg.dev/$GOOGLE_PROJECT/first-application/nginx:latest
+          gcloud auth configure-docker europe-west3-docker.pkg.dev
+
+      # Step 4: Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t europe-west3-docker.pkg.dev/${{ secrets.GOOGLE_PROJECT }}/first-application/nginx:latest .
+
+      # Step 5: Push Docker image to Artifact Registry
+      - name: Push Docker image to Artifact Registry
+        run: |
+          docker push europe-west3-docker.pkg.dev/${{ secrets.GOOGLE_PROJECT }}/first-application/nginx:latest
